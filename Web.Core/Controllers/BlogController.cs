@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Web.Core.AuthHelper.OverWrite;
 using Web.Core.IServices;
-using Web.Core.Service;
+using Web.Core.Model.Models;
+
 
 namespace Web.Core.Controllers
 {
@@ -15,13 +16,29 @@ namespace Web.Core.Controllers
     [ApiController]
     public class BlogController : ControllerBase
     {
+
+        private IAdvertisementService _advertisementService;
+        public BlogController(IAdvertisementService advertisementService) {
+
+            _advertisementService = advertisementService;
+        
+        }
  
-        [Authorize(Roles ="Admin")]
+        //[Authorize(Roles ="Admin")]
         [HttpGet]
         public int Get(int i,int j)
         {
-            IAdvertisementService advertisementServices = new AdvertisementServices();
-            return advertisementServices.Sum(i,j);
+            //IAdvertisementService advertisementServices = new AdvertisementServices();
+            //return advertisementServices.Sum(i,j);
+            return 1;
+        }
+
+        [HttpGet("id")]
+        public async Task< List<Advertisement>> Get(int id)
+        {
+         
+
+            return  await _advertisementService.Query(c => c.Id == id);
 
         }
         // POST: api/Blog

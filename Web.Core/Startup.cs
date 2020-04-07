@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extras.DynamicProxy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,7 +19,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
+using Web.Core.AOP;
+using Web.Core.AuthHelper.OverWrite;
 using Web.Core.Extensions;
+using Web.Core.IServices;
 
 namespace Web.Core
 {
@@ -35,7 +40,7 @@ namespace Web.Core
         {
             services.AddControllers();
             services.AddSwaggerSetup();
-            services.AddAuthorizationSetup();
+           // services.AddAuthorizationSetup();
 
             services.Configure<JwtDemo>(Configuration.GetSection("tokenConfig"));
 
@@ -70,6 +75,32 @@ namespace Web.Core
 
         }
 
+        public void ConfigureContainer(ContainerBuilder builder) {
+
+            var basePath = AppContext.BaseDirectory;
+            //  builder.RegisterType<AdvertisementServices>().As<IAdvertisementService>();
+
+            builder.RegisterType<BlogLopAOP>();
+            builder.RegisterType<BlogCacheAOP>();
+              var serviceDllFile = Path.Combine(basePath,"Web.Core.Service.dll");
+
+            var repositoryDllFile = Path.Combine(basePath, "Web.Core.Repostitory.dll");
+
+            var assemblysServices = Assembly.LoadFrom(serviceDllFile);
+            builder.RegisterAssemblyTypes(assemblysServices)
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope()
+                .EnableInterfaceInterceptors()
+               .InterceptedBy(typeof(BlogLopAOP),typeof(BlogCacheAOP));
+
+            // 获取 Repository.dll 程序集服务，并注册
+            var assemblysRepository = Assembly.LoadFrom(repositoryDllFile);
+            builder.RegisterAssemblyTypes(assemblysRepository)
+                   .AsImplementedInterfaces()
+                   .InstancePerDependency();
+
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -87,13 +118,20 @@ namespace Web.Core
 
             app.UseHttpsRedirection();
 
+            app.UseCookiePolicy();
+
+            app.UseStatusCodePages();
             app.UseRouting();
+
+
+           
 
             //先开启认证
             app.UseAuthentication();
             // 开启异常中间件，要放到最后
             app.UseAuthorization();
-           
+
+            app.UseMiddleware<JwtTokenAuth>();
 
             app.UseEndpoints(endpoints =>
             {

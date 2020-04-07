@@ -4,10 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>D:\Id4\Blog.IdentityServer4\Web.Core\bin\Debug\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Web.Core.IRepository\Web.Core.IRepository.csproj" />
     <ProjectReference Include="..\Web.Core.IServices\Web.Core.IServices.csproj" />
-    <ProjectReference Include="..\Web.Core.Repostitory\Web.Core.Repostitory.csproj" />
   </ItemGroup>
 
 </Project>

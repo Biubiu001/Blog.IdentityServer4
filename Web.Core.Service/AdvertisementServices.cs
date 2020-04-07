@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using Web.Core.IRepository;
 using Web.Core.IServices;
-using Web.Core.Repostitory;
+using Web.Core.Model.Models;
+using Web.Core.Service.Base;
 
 namespace Web.Core.Service
 {
-    public class AdvertisementServices: IAdvertisementService
+    public class AdvertisementServices: BaseServices<Advertisement>, IAdvertisementService
     {
-        IAdvertisementRepository dal = new AdvertisementRepository();
-
-        public int Sum(int i, int j)
+        IAdvertisementRepository dal;
+        public AdvertisementServices(IAdvertisementRepository dal)
         {
-           return  dal.sum(i,j);
+            this.dal = dal;
+            base.baseDal = dal;
         }
     }
 }
