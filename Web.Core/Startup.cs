@@ -21,6 +21,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using Web.Core.AOP;
 using Web.Core.AuthHelper.OverWrite;
+using Web.Core.Common.MemoryCache;
 using Web.Core.Extensions;
 using Web.Core.IServices;
 
@@ -44,6 +45,7 @@ namespace Web.Core
 
             services.Configure<JwtDemo>(Configuration.GetSection("tokenConfig"));
 
+            services.AddScoped<ICaching, MemoryCaching>();
             var token = Configuration.GetSection("tokenConfig").Get<JwtDemo>();
             services.AddAuthentication(x =>
             {
@@ -91,7 +93,7 @@ namespace Web.Core
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope()
                 .EnableInterfaceInterceptors()
-               .InterceptedBy(typeof(BlogLopAOP),typeof(BlogCacheAOP));
+               .InterceptedBy(typeof(BlogCacheAOP));
 
             // 获取 Repository.dll 程序集服务，并注册
             var assemblysRepository = Assembly.LoadFrom(repositoryDllFile);
