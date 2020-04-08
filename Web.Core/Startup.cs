@@ -22,6 +22,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Web.Core.AOP;
 using Web.Core.AuthHelper.OverWrite;
 using Web.Core.Common.MemoryCache;
+using Web.Core.Common.Redis;
 using Web.Core.Extensions;
 using Web.Core.IServices;
 
@@ -39,13 +40,18 @@ namespace Web.Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+                services.AddSingleton<IRedisCacheManage, RedisCacheManage>();
+       
+
             services.AddControllers();
             services.AddSwaggerSetup();
+            services.AddMemoryCacheSetup();
+            services.AddCorsSetup();
            // services.AddAuthorizationSetup();
 
             services.Configure<JwtDemo>(Configuration.GetSection("tokenConfig"));
 
-            services.AddScoped<ICaching, MemoryCaching>();
+         
             var token = Configuration.GetSection("tokenConfig").Get<JwtDemo>();
             services.AddAuthentication(x =>
             {
@@ -117,7 +123,7 @@ namespace Web.Core
                 c.RoutePrefix = "";
             });
 
-
+            app.UseCors("LimitRequests");
             app.UseHttpsRedirection();
 
             app.UseCookiePolicy();

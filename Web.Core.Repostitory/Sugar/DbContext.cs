@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Web.Core.Repostitory.Sugar
 {
-   public class DbContext
+    public class DbContext
     {
         private static string _connectionString;
         private static DbType _dbType;

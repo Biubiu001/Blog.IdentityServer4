@@ -10,11 +10,11 @@ namespace Web.Core.Service
 {
     public class AdvertisementServices: BaseServices<Advertisement>, IAdvertisementService
     {
-        IAdvertisementRepository dal;
-        public AdvertisementServices(IAdvertisementRepository dal)
-        {
-            this.dal = dal;
-            base.baseDal = dal;
-        }
+        //IAdvertisementRepository dal;
+        //public AdvertisementServices(IAdvertisementRepository dal)
+        //{
+        //    this.dal = dal;
+        //    base.baseDal = dal;
+        //}
     }
 }
